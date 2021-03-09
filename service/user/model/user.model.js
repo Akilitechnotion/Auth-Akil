@@ -1,7 +1,9 @@
 "use strict";
-const EventSchema = require("./user.schema");
+const mongoose = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId;
+const UserSchema = require("./user.schema");
 
-class EventModel {
+class UserModel {
   constructor() {
     this.DB = require("../../../config/dbm");
     this.projectedKeys = {
@@ -9,42 +11,23 @@ class EventModel {
     };
   }
 
-  /*
-   * Name of the Method : eventByOrgId
-   * Description : Fetchs the list of Orders
-   * Parameter : None
-   * Return : Promise<OrderDetails>
-   */
+  userRegister(request) {
+    let register_user = new UserSchema(request);
 
-  eventByOrgId() {
     return new Promise(async (resolve, reject) => {
       try {
-        const result = await EventSchema.aggregate([
-          {
-            $match: {
-              is_deleted: false,
-            },
-          },
-          {
-            $project: {
-              _id: 1,
-              name: 1,
-              org_id: 1,
-              desc: 1,
-              start_date: 1,
-              end_date: 1,
-              filler_media: 1,
-              banner: 1,
-              mobile: 1,
-              place: 1,
-              is_deleted: 1,
-              crtd_dt: 1,
-              crtd_by: 1,
-              uptd_dt: 1,
-              uptd_by: 1,
-            },
-          },
-        ]);
+        const result = await register_user.save();
+        resolve(result);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  findUserById(id) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const result = await UserSchema.find({ _id: ObjectId(id), is_deleted: false });
         resolve(result);
       } catch (error) {
         console.log(error);
@@ -52,6 +35,45 @@ class EventModel {
       }
     });
   }
-}
 
-module.exports = new EventModel();
+  findUserByEmail(email) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const result = await UserSchema.find({ email: email, is_deleted: false });
+        resolve(result);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  findUserByMobile(mobile) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const result = await UserSchema.find({ mobile: mobile, is_deleted: false });
+        resolve(result);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  updateToken(user_id, token) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let result = await UserSchema.updateMany(
+          { _id: ObjectId(user_id) },
+          {
+            $set: {
+              token_id: token,
+            },
+          }
+        );
+        resolve(result);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+}
+module.exports = new UserModel();

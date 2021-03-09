@@ -1,66 +1,64 @@
-const mongoose = require('mongoose');
-const CC = require('../../../config/constant_collection');
-/**
- * Event Schema
- */
-const EventSchema = new mongoose.Schema({
-    org_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        //ref: "o001_organization"
-    },
-    name: {
-        type: String,
-        required: true
-    },
-    desc: {
-        type: String,
-        required: true
-    },
-    banner: [],
-    filler_media: {
-        id: {
-            type: mongoose.Schema.Types.ObjectId
-        },
-        type: {
-            type: String
-        },
-        path: {
-            type: String
-        },
-        is_deleted: {
-            type: Boolean,
-            default: false
-        },
-    },
-    event_type_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: CC.A004_REFERENCE_DATA
-    },
-    start_date: {
-        type: Date
-    },
-    end_date: {
-        type: Date
-    },
-    is_deleted: {
-        type: Boolean,
-        default: false
-    },
-    crtd_by:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: CC.U001_USERS
-    },
-    uptd_by:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: CC.U001_USERS
-    },
-    crtd_dt :{ 
-        type: Number, 
-        default: (new Date()).getTime() 
-    },
-    uptd_dt :{
-        type: Number, 
-        default: (new Date()).getTime() 
-    }
+const mongoose = require("mongoose");
+const CC = require("../../../config/constant_collection");
+const bcrypt = require("bcrypt");
+
+const UserSchema = new mongoose.Schema({
+  first_name: {
+    type: String,
+  },
+  last_name: {
+    type: String,
+  },
+  email: {
+    type: String,
+  },
+  mobile: {
+    type: Number,
+  },
+  password: {
+    type: String,
+  },
+  profile: {
+    type: String,
+  },
+  gender: {
+    type: String,
+    enum: ["Male", "Female"],
+    default: "Male",
+  },
+  is_deleted: {
+    type: Boolean,
+    default: false,
+  },
+  created_date: {
+    type: Date,
+    default: new Date(),
+  },
+  update_date: {
+    type: Date,
+    default: new Date(),
+  },
+  password_reset_token: {
+    type: String,
+  },
 });
-module.exports = mongoose.model(CC.O002A_EVENT, EventSchema);
+
+UserSchema.pre("save", function (next) {
+  const user = this;
+  var SALTING_ROUNDS = 6;
+  if (!user.isModified || !user.isNew) {
+    next();
+  } else {
+    bcrypt.hash(user.password, SALTING_ROUNDS, function (err, hash) {
+      if (err) {
+        next(err);
+      } else {
+        user.password = hash;
+        next();
+      }
+    });
+  }
+});
+
+const UserModel = mongoose.model(CC.U001_USERS, UserSchema);
+module.exports = UserModel;

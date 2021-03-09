@@ -2,7 +2,7 @@ const express = require("express");
 const helmet = require("helmet");
 const http = require("http");
 const AppConfig = require("./config/app-config");
-const EventRoutes = require("./service/user/route");
+const UserRoutes = require("./service/user/route");
 const logger = require("./config/winston");
 
 class Server {
@@ -18,7 +18,7 @@ class Server {
 
   /* Including app Routes starts */
   includeRoutes() {
-    new EventRoutes(this.app).routesConfig();
+    new UserRoutes(this.app).routesConfig();
   }
   /* Including app Routes ends */
 

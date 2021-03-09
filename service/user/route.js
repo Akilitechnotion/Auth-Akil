@@ -6,7 +6,7 @@ class Routes {
   }
   /* creating app Routes starts */
   appRoutes() {
-    this.app.get("/register", userApi.register);
+    this.app.post("/register", userApi.register);
   }
 
   routesConfig() {

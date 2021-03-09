@@ -15,15 +15,19 @@ class MongoDB {
       //Set up default mongoose connection
       mongoose.connect(
         process.env.MONGODB_DB_URL,
+        {
+          useNewUrlParser: true,
+          useUnifiedTopology: true,
+        },
         mongoose.connection.on("error", function (err) {
           reject(err);
         })
       );
       mongoose.connection.on("connected", function () {
+        console.log("Connected!!!");
         resolve(mongoose.connection);
       });
     });
   }
 }
 module.exports = new MongoDB();
-//module.exports.redisClient = redis.createClient();
