@@ -1,0 +1,18 @@
+{
+    "common_messages_error": "Something went wrong please try again later.",
+    "common_messages_record_available": "Records are available.",
+    "common_messages_record_not_available": "Records are not available.",
+    "common_messages_record_added": "Records added successfully.",
+    "common_messages_record_updated": "Records updated successfully.",
+    "common_messages_record_deleted": "Records deleted successfully.",
+    "required_parameters_null_or_missing": "Required parameters value null or missing.",
+    "in_correct_email_psw_error": "The email/password you entered does not match. Please enter the correct email/password",
+    "mobile_already_exist": "This Mobile already exists in our records.",
+    "email_already_exist": "This Email Id already exists in our records.",
+    "expects_application_json" : "Expects 'application/json'",
+    "something_went_wrong " : "Something went wrong.",
+    "otp_sent_successfully": "OTP sent successfully.",
+    "report_generated_success": "Report generated successfully.",
+    "item_from_other_store": "Please add items from same store as in cart."
+  }
+  
