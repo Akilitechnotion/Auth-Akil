@@ -8,6 +8,7 @@ class Routes {
   appRoutes() {
     this.app.post("/register", userApi.register);
     this.app.post("/login", userApi.login);
+    this.app.put("/logout/:id", userApi.logout);
   }
 
   routesConfig() {

@@ -13,6 +13,8 @@
     "something_went_wrong " : "Something went wrong.",
     "otp_sent_successfully": "OTP sent successfully.",
     "report_generated_success": "Report generated successfully.",
-    "item_from_other_store": "Please add items from same store as in cart."
+    "item_from_other_store": "Please add items from same store as in cart.",
+    "logout_message_success":"Logout Successfull.",
+    "allready_logged_out":"Already Logged Out."
   }
   

@@ -84,6 +84,38 @@ class EventHandler {
       }
     }
   }
+
+  async logout(request, response) {
+    let id = sanitizer.sanitize(request.params.id);
+    console.log(id);
+
+    if (id != "" && id != null && typeof id != undefined) {
+      try {
+        const result = await userModel.findUserById(id);
+        if (result && result.length > 0) {
+          let id = result[0]["id"];
+          let token = "1";
+          const logout = await userModel.updateToken(id, token);
+          console.log(logout);
+          if (logout && logout != null) {
+            if (logout.nModified == 1) {
+              response.send(util.success({ updated: true }, message.logout_message_success));
+            } else {
+              response.send(util.success({ updated: false }, message.allready_logged_out));
+            }
+          } else {
+            response.send(util.error({}, message.common_messages_record_not_available));
+          }
+        } else {
+          response.send(util.error({}, message.common_messages_record_not_available));
+        }
+      } catch (error) {
+        response.status(400).send(util.error(error, message.common_messages_error));
+      }
+    } else {
+      response.send(util.error({}, message.common_messages_record_not_available));
+    }
+  }
 }
 
 module.exports = new EventHandler();
