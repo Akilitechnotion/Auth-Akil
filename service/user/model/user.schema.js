@@ -41,6 +41,9 @@ const UserSchema = new mongoose.Schema({
   password_reset_token: {
     type: String,
   },
+  token_id: {
+    type: String,
+  },
 });
 
 UserSchema.pre("save", function (next) {

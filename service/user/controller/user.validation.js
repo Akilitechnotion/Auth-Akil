@@ -16,6 +16,17 @@ class ValidateFields {
     });
     return JoiSchema.validate(req);
   }
+
+  validateLoginUser(req) {
+    const JoiSchema = Joi.object({
+      mobile: Joi.string()
+        .length(10)
+        .pattern(/^[0-9]+$/)
+        .required(),
+      password: Joi.string().min(3).max(15).required(),
+    });
+    return JoiSchema.validate(req);
+  }
 }
 
 module.exports = new ValidateFields();
