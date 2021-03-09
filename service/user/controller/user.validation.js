@@ -27,6 +27,14 @@ class ValidateFields {
     });
     return JoiSchema.validate(req);
   }
+
+  validateForgotPassword(req) {
+    const JoiSchema = Joi.object({
+      password: Joi.string().min(3).max(15).required(),
+      cpassword: Joi.string().min(3).max(15).required(),
+    });
+    return JoiSchema.validate(req);
+  }
 }
 
 module.exports = new ValidateFields();

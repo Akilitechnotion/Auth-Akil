@@ -75,5 +75,52 @@ class UserModel {
       }
     });
   }
+
+  resetTokenSave(email, token) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let result = await UserSchema.updateOne(
+          { email: email },
+          {
+            $set: {
+              password_reset_token: token,
+            },
+          }
+        );
+        resolve(result);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  findUserByToken(token) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let result = await UserSchema.find({ password_reset_token: token, is_deleted: false });
+        resolve(result);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  userUpdatePassword(id, password) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let result = await UserSchema.updateMany(
+          { _id: ObjectId(id) },
+          {
+            $set: {
+              password: password,
+            },
+          }
+        );
+        resolve(result);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
 }
 module.exports = new UserModel();

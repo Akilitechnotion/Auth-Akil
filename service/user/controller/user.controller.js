@@ -6,6 +6,7 @@ const ValidateFields = require("./user.validation");
 const sanitizer = require("sanitizer");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const mailer = require("../../../utils/nodemailer");
 
 class EventHandler {
   async register(request, response) {
@@ -114,6 +115,77 @@ class EventHandler {
       }
     } else {
       response.send(util.error({}, message.common_messages_record_not_available));
+    }
+  }
+
+  async forgotPasswordByEmail(request, response) {
+    var email = sanitizer.sanitize(request.params.email);
+    try {
+      const result = await userModel.findUserByEmail(email);
+      if (result && result.length > 0) {
+        const payload = { id: result[0]._id };
+        const secret = process.env.JWT_SECRET;
+        const token = jwt.sign(payload, secret);
+
+        const tokenAdd = await userModel.resetTokenSave(result[0]["email"], token);
+        if (tokenAdd.nModified == 1) {
+          var mailResponse = await mailer.send(result[0]["email"], "Forget Password", true, token);
+          if (mailResponse && mailResponse != null && mailResponse != undefined) {
+            response.send(util.success(mailResponse, message.mail_sent));
+          } else {
+            response.send(util.error({}, message.mail_not_sent));
+          }
+        } else {
+          response.send(util.error({}, message.mail_not_sent));
+        }
+      } else {
+        response.send(util.error({}, message.common_messages_record_not_available));
+      }
+    } catch (error) {
+      response.status(400).send(util.error(error, message.common_messages_error));
+    }
+  }
+
+  async forgotPassword(request, response) {
+    var token = request.params.token;
+    var data = {
+      password: sanitizer.sanitize(request.body.password),
+      cpassword: sanitizer.sanitize(request.body.cpassword),
+    };
+
+    const resp = ValidateFields.validateForgotPassword(data);
+
+    if (resp.error) {
+      response.send(resp.error.details[0].message);
+    } else {
+      try {
+        if (data.password === data.cpassword) {
+          const result = await userModel.findUserByToken(token);
+          if (result && result.length > 0) {
+            const change_pass = await userModel.userUpdatePassword(result[0]["_id"], bcrypt.hashSync(data.password, 6));
+            if (change_pass && change_pass != null) {
+              if (change_pass.nModified == 1) {
+                var updateResetToken = await userModel.resetTokenSave(result[0]["email"], undefined);
+                if (updateResetToken && updateResetToken.nModified == 1) {
+                  response.send(util.success({ updated: true }, message.common_messages_record_updated));
+                } else {
+                  response.send(util.error({}, message.common_messages_record_not_updated));
+                }
+              } else {
+                response.send(util.success({ updated: false }, message.common_messages_record_not_updated));
+              }
+            } else {
+              response.send(util.error({}, message.common_messages_error));
+            }
+          } else {
+            response.send(util.error({}, message.common_messages_error));
+          }
+        } else {
+          response.send(util.error("", message.common_message_password_not_match));
+        }
+      } catch (error) {
+        response.status(400).send(util.error(error, "server error"));
+      }
     }
   }
 }
